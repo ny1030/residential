@@ -81,7 +81,7 @@ const validate = async (browser, pageUrl) => {
     ]);
     await page.evaluate((selector) => {
       return document.querySelector(selector).textContent;
-    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; }).then(isSale => {if(isSale) {discord.send(pageUrl);}});
+    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; }).then(isSale => {if(isSale) {discord.send(pageUrl + conf.URL_MN_PAGES.chintai);}});
   } catch (error) {
 
   } finally {
@@ -92,7 +92,7 @@ const validate = async (browser, pageUrl) => {
 }
 
 const main = async () => {
-  const browser = await puppeteer.launch({ headless: HEADLESS, defaultViewport: null });
+  const browser = await puppeteer.launch({ headless: HEADLESS, defaultViewport: null,args:['--no-sandbox', '--disable-setuid-sandbox']});
   const page = await browser.newPage();
   await login(page)
     .then(res => search(browser, page));

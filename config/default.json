@@ -1,7 +1,7 @@
 {
     "HEADLESS": true,
     "DEBUG_MODE": false,
-    "PAGES": 2,
+    "PAGES": 3,
     "INTERVAL": 5000,
     "URL_MN_BASE": "https://www.mansion-note.com",
     "URL_MN_PAGES": {
@@ -9,5 +9,5 @@
         "search": "/mansion/search",
         "chintai": "/houses/chintai"
     },
-    "TARGET_LOCATIONS": ["東府中","稲城"]
+    "TARGET_LOCATIONS": ["東府中","稲城","若葉台","南多摩"]
 }

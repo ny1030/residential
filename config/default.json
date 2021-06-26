@@ -9,6 +9,6 @@
         "search": "/mansion/search",
         "chintai": "/houses/chintai"
     },
-    "TARGET_LOCATIONS": ["恵比寿"],
-    "TARGET_MADORI_REGEX": "3LDK"
+    "TARGET_LOCATIONS": ["恵比寿|川崎"],
+    "TARGET_MADORI_REGEX": "2LDK|2DK|1LDK|SLDK"
 }

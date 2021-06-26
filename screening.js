@@ -1,5 +1,7 @@
 'use strict';
 
+//TODO:値段で絞り込み
+
 const puppeteer = require('puppeteer');
 const Discord = require('./module/discord-notify.js');
 const conf = require('config');

@@ -45,6 +45,7 @@ const search = async (browser, page) => {
     urlSearch.searchParams.set('s', 'score')
     for (let i = 0; i < list.length; i++) {
       console.log(list[i])
+      discord.send(list[i])
       urlSearch.searchParams.set('q', list[i])
       for (let p = 0; p < conf.PAGES; p++) {
         urlSearch.searchParams.set('p', p + 1)
@@ -79,9 +80,12 @@ const validate = async (browser, pageUrl) => {
       page.waitForNavigation({ waitUntil: ['networkidle2'] }),
       await page.goto(pageUrl + conf.URL_MN_PAGES.chintai)
     ]);
+    let name = await page.evaluate((selector) => {
+      return document.querySelector(selector).textContent;
+    }, "#gsub > div.container > div.mansion-detail-header > div > div.mansion-detail-header-names > h1 > div").then(value => { return value });
     await page.evaluate((selector) => {
       return document.querySelector(selector).textContent;
-    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; }).then(isSale => {if(isSale) {discord.send(pageUrl + conf.URL_MN_PAGES.chintai);}});
+    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; }).then(isSale => {if(isSale) {discord.send(name + "\n" + pageUrl + conf.URL_MN_PAGES.chintai);}});
   } catch (error) {
 
   } finally {

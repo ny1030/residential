@@ -1,8 +1,5 @@
 'use strict';
 
-//TODO:page1を2回回してる？
-//TODO:chintaiページにリンクしてほしい
-
 const puppeteer = require('puppeteer');
 const Discord = require('./module/discord-notify.js');
 const conf = require('config');
@@ -14,6 +11,7 @@ const { url } = require('inspector');
 const HEADLESS = conf.HEADLESS;
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 var discord = new Discord(env.parsed.DISCORD, "boter");
+const patternMadori = new RegExp(conf.TARGET_MADORI_REGEX);
 
 const login = async (page) => {
   try {
@@ -74,18 +72,49 @@ const search = async (browser, page) => {
 const validate = async (browser, pageUrl) => {
   const page = await browser.newPage();
   try {
-    //await page.bringToFront();
     console.log(pageUrl + conf.URL_MN_PAGES.chintai)
     await Promise.all([
       page.waitForNavigation({ waitUntil: ['networkidle2'] }),
       await page.goto(pageUrl + conf.URL_MN_PAGES.chintai)
     ]);
+
+    //ScreenShot
+    const targetElementSelector = '#gsub > div.container > section > div > div'
+    const clip = await page.evaluate(s => {
+      const el = document.querySelector(s)
+  
+      // エレメントの高さと位置を取得
+      const { width, height, top: y, left: x } = el.getBoundingClientRect()
+      return { width, height, x, y }
+    }, targetElementSelector)
+    // スクリーンショットに位置と大きさを指定してclipする
+    await page.screenshot({ clip, path: 'ss.png' })
+
+    //物件名
     let name = await page.evaluate((selector) => {
       return document.querySelector(selector).textContent;
     }, "#gsub > div.container > div.mansion-detail-header > div > div.mansion-detail-header-names > h1 > div").then(value => { return value });
-    await page.evaluate((selector) => {
+
+    //賃貸募集中かつ希望の間取りがあれば通知
+    let isSale = await page.evaluate((selector) => {
       return document.querySelector(selector).textContent;
-    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; }).then(isSale => {if(isSale) {discord.send(name + "\n" + pageUrl + conf.URL_MN_PAGES.chintai);}});
+    }, "#gsub > div.container > section > div > ul > li.active > a > span").then(value => { return parseInt(value) != 0; });
+    console.log("isSaleChintai:")
+    console.log(isSale)
+    if(isSale){
+      let madoriDOMList = await page.$$('#gsub > div.container > section > div > div > table > tbody > tr > td:nth-child(5)');
+      let madoriList = [];
+      for (let i = 0; i < madoriDOMList.length; i++) {
+        let madori =  await (await madoriDOMList[i].getProperty('textContent')).jsonValue().then(value => { return value; })
+        madoriList.push(madori);
+      }
+      for(let i = 0; i < madoriList.length; i++){
+        if(madoriList[i].match(patternMadori) != null){
+          discord.send(name + "\n" + pageUrl + conf.URL_MN_PAGES.chintai,"ss.png");
+          break
+        }
+      }
+    }
   } catch (error) {
 
   } finally {

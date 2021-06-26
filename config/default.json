@@ -9,5 +9,6 @@
         "search": "/mansion/search",
         "chintai": "/houses/chintai"
     },
-    "TARGET_LOCATIONS": ["立川","横浜","元町中華街"]
+    "TARGET_LOCATIONS": ["恵比寿"],
+    "TARGET_MADORI_REGEX": "3LDK"
 }

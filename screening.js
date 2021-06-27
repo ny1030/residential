@@ -4,10 +4,6 @@ const puppeteer = require('puppeteer');
 const Discord = require('./module/discord-notify.js');
 const conf = require('config');
 const env = require('dotenv').config();
-var fs = require('fs')
-var util = require('util');
-const { getHeapCodeStatistics } = require('v8');
-const { url } = require('inspector');
 const HEADLESS = conf.HEADLESS;
 const sleep = msec => new Promise(resolve => setTimeout(resolve, msec));
 var discord = new Discord(env.parsed.DISCORD, "boter");

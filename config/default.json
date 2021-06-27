@@ -9,6 +9,8 @@
         "search": "/mansion/search",
         "chintai": "/houses/chintai"
     },
-    "TARGET_LOCATIONS": ["恵比寿|川崎"],
-    "TARGET_MADORI_REGEX": "2LDK|2DK|1LDK|SLDK"
+    "TARGET_LOCATIONS_LIST": ["宇都宮"],
+    "TARGET_MADORI_REGEX": "2LDK|2DK|1LDK|SLDK",
+    "TARGET_PRICE": 15,
+    "USER_AGENT": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36"
 }

@@ -1,7 +1,5 @@
 'use strict';
 
-//TODO:値段で絞り込み
-
 const puppeteer = require('puppeteer');
 const Discord = require('./module/discord-notify.js');
 const conf = require('config');
@@ -17,10 +15,12 @@ const patternMadori = new RegExp(conf.TARGET_MADORI_REGEX);
 
 const login = async (page) => {
   try {
+    await page.setUserAgent(conf.USER_AGENT);
     await Promise.all([
       page.waitForNavigation({ waitUntil: ['networkidle2'] }),
       await page.goto(conf.URL_MN_BASE + conf.URL_MN_PAGES.login)
     ]);
+    await sleep(conf.INTERVAL*3)
     await Promise.all([
       page.waitForSelector("#mail"),
       await page.type("#mail", env.parsed.ID),
@@ -40,7 +40,7 @@ const login = async (page) => {
 
 const search = async (browser, page) => {
   try {
-    var list = conf.TARGET_LOCATIONS;
+    var list = conf.TARGET_LOCATIONS_LIST;
     let urlSearch = new URL(conf.URL_MN_BASE + conf.URL_MN_PAGES.search);
     urlSearch.searchParams.set('s', 'score')
     for (let i = 0; i < list.length; i++) {
@@ -106,12 +106,16 @@ const validate = async (browser, pageUrl) => {
     if(isSale){
       let madoriDOMList = await page.$$('#gsub > div.container > section > div > div > table > tbody > tr > td:nth-child(5)');
       let madoriList = [];
+      let kakakuDOMList = await page.$$('#gsub > div.container > section > div > div > table > tbody > tr > td:nth-child(2)');
+      let kakakuList = [];
       for (let i = 0; i < madoriDOMList.length; i++) {
         let madori =  await (await madoriDOMList[i].getProperty('textContent')).jsonValue().then(value => { return value; })
         madoriList.push(madori);
+        let kakaku =  await (await kakakuDOMList[i].getProperty('textContent')).jsonValue().then(value => { return value.match(/\b([\d]*)\b/)[0]; })
+        kakakuList.push(kakaku);
       }
       for(let i = 0; i < madoriList.length; i++){
-        if(madoriList[i].match(patternMadori) != null){
+        if(madoriList[i].match(patternMadori) != null && kakakuList[i] <= conf.TARGET_PRICE ){
           discord.send(name + "\n" + pageUrl + conf.URL_MN_PAGES.chintai,"ss.png");
           break
         }
